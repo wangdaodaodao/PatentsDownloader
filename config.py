@@ -1,0 +1,2 @@
+KEY_WORDS = 'python'
+MAX_PAGE_NUMS = 5
