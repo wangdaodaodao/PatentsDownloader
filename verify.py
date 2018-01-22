@@ -5,8 +5,7 @@ import lxml
 import requests
 
 
-verify_url = 'http://www2.drugfuture.com/cnpat/verify.aspx'
-
+verify_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
 
 def verify(pantentno='CN200910083739.2'):
 
@@ -20,5 +19,13 @@ def verify(pantentno='CN200910083739.2'):
     print(response)
 
 
+def verifyCode():
+    response = requests.get(verify_url, headers=headers_verifycode)
+    with open('yzm.jpg', 'wb') as code:
+        code.write(response.content)
+    yzm = input('输入验证：>>')
 
-verify()
+    return yzm
+
+
+print(verifyCode())
