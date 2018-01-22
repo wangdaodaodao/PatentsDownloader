@@ -1,6 +1,6 @@
-from getid import *
+from patentid import *
 
 
-patants_no = get_id('python', 2)
-print(patants_no)
+patents_no = get_id('python', 2)
+print(patents_no)
 print('text')
