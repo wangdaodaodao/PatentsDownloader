@@ -12,6 +12,6 @@ def get_id(patent_keywords, page_nums):
         patents_keywords=KEY_WORDS, page_nums=1))
     soup = BeautifulSoup(response.text, 'lxml')
     title = soup.select('.share_summary')
-    patants_id = list(set([i.get('onclick').split('=')[2].split("'")[
+    patents_id = list(set([i.get('onclick').split('=')[2].split("'")[
                       0] for i in soup.select('.stitle')]))
     return patents_id
