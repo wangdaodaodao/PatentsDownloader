@@ -53,6 +53,18 @@ headers_verifycode = {
         
 }
 
-header_4 = {
-    
-}
+headers_save_patent = {
+    'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Encoding':'gzip, deflate',
+    'Accept-Language':'zh-CN,zh;q=0.8',
+    'Cache-Control':'no-cache',
+    'Connection':'keep-alive',
+    'Content-Length':'415',
+    'Content-Type':'application/x-www-form-urlencoded',
+    'Origin':'http://www2.drugfuture.com',
+    'Pragma':'no-cache',
+    'Referer':'http://www2.drugfuture.com/cnpat/search.aspx',
+    'Upgrade-Insecure-Requests':'1',
+    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.104 Safari/537.36 Core/1.53.4399.400 QQBrowser/9.7.12777.400'
+        
+    }
