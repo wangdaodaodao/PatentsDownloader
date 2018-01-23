@@ -36,7 +36,7 @@ def search_patent():
     pattern = re.compile('<input name="PatentNo" value=(.*?) type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
     tt =list( pattern.findall(response.text)[0])
     host_pattern = re.compile('{document.Download.action="(.*?)"')
-    tt2 = host_pattern.findall(response.text)[0].split('//')[1].split('/')[0]
+    tt2 = host_pattern.findall(response.text)[2].split('//')[1].split('/')[0]
     return tt, tt2
 
 def save_patent():
@@ -59,6 +59,10 @@ def save_patent():
 
     print(headers_save_patent)
     response = session.post(save_patent_url, headers=headers_save_patent, data = data)
-    print(response.text)
 
+    file_url = 'http://{}/cnpat/package/%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E7%94%B3%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B9%A6{}.pdf'.format(tt[1], no)
+    response_2 = session.get(file_url)
+    with open('{}.pdf'.format(no), 'wb') as code:
+        code.write(response_2.content)
 save_patent()
+
