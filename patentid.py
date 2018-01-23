@@ -17,4 +17,5 @@ def get_id(keywords=KEY_WORDS, page_nums=1):
     return patents_id
 
 
-get_id()
+
+
