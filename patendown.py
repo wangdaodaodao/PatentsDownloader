@@ -10,10 +10,10 @@ session = requests.Session()
 verify_url = 'http://www2.drugfuture.com/cnpat/verify.aspx'
 verifycode_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
 search_url = 'http://www2.drugfuture.com/cnpat/search.aspx'
-save_patent_url = 'http://www6.drugfuture.com/cnpat/SecurePdf.aspx'
 
 
-def get_pdf(no = 'CN201410684364.6'):
+
+def get_pdf(no = 'CN201510708735.4'):
     data_verify = {
         'cnpatentno': no,
         'Common': '1'
@@ -51,22 +51,22 @@ def get_pdf(no = 'CN201410684364.6'):
     }
 
     headers_save_patent['Host'] = tt2
-
+    save_patent_url = 'http://{}/cnpat/SecurePdf.aspx'.format(tt2)
+    print(save_patent_url)
     response_savepdf = session.post(save_patent_url, headers=headers_save_patent, data = data_savepdf)
+
     print(response_savepdf.text)
-
-
 
     headers_getpdf['Host'] = tt2
     headers_getpdf['Referer'] = 'http://{}/cnpat/SecurePdf.aspx'.format(tt2)
 
-    file_url = 'http://{}/cnpat/package/发明专利申请说明书{}.pdf'.format(tt2, no)
-    response_savepdf_2 = session.get(file_url, headers=headers_getpdf)
+    file_url = 'http://{}/cnpat/package/%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E7%94%B3%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B9%A6{}.pdf'.format(tt2, no)
+     
 
 
-    print(file_url, headers_getpdf)
+    print(file_url)
     with open('{}.pdf'.format(no), 'wb') as code:
-        code.write(response_savepdf_2.content)
+        code.write(session.get(file_url, headers=headers_save_patent).content)
     print('下载完毕!!!')
 
 
