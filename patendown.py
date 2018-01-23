@@ -33,9 +33,9 @@ def get_pdf(no = 'CN201510708735.4'):
     pattern = re.compile('<input name="PatentNo" value=(.*?) type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
     tt =list( pattern.findall(response_search.text)[0])
     host_pattern = re.compile('{document.Download.action="(.*?)"')
-    tt2 = host_pattern.findall(response_search.text)[2].split('//')[1].split('/')[0]
+    tt2 = host_pattern.findall(response_search.text)[3].split('//')[1].split('/')[0]
     
-    
+    print()
     data_savepdf = {
         'PatentNo':tt[0],
         'Name':tt[1],
@@ -55,8 +55,6 @@ def get_pdf(no = 'CN201510708735.4'):
     print(save_patent_url)
     response_savepdf = session.post(save_patent_url, headers=headers_save_patent, data = data_savepdf)
 
-    print(response_savepdf.text)
-
     headers_getpdf['Host'] = tt2
     headers_getpdf['Referer'] = 'http://{}/cnpat/SecurePdf.aspx'.format(tt2)
 
@@ -66,7 +64,7 @@ def get_pdf(no = 'CN201510708735.4'):
 
     print(file_url)
     with open('{}.pdf'.format(no), 'wb') as code:
-        code.write(session.get(file_url, headers=headers_save_patent).content)
+        code.write(session.get(file_url, headers=headers_getpdf).content)
     print('下载完毕!!!')
 
 
