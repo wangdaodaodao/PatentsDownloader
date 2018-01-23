@@ -36,7 +36,7 @@ def search_patent():
     pattern = re.compile('<input name="PatentNo" value=(.*?) type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
     tt =list( pattern.findall(response.text)[0])
     host_pattern = re.compile('{document.Download.action="(.*?)"')
-    tt2 = host_pattern.findall(response.text)[0].split('/cnpat')[0]
+    tt2 = host_pattern.findall(response.text)[0].split('//')[1].split('/')[0]
     return tt, tt2
 
 def save_patent():
