@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import lxml
 import requests
 from PIL import Image
-import pytesseract
 
 verify_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
 
