@@ -3,13 +3,8 @@ from config import *
 from bs4 import BeautifulSoup
 import lxml
 import requests
-from PIL import Image
 
 verify_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
-
-
-
-
 
 
 def verifyCode():
@@ -18,9 +13,6 @@ def verifyCode():
         code.write(response.content)
     yzm = input('输入验证：>>')
 
-    img = Image.open('yzm.jpg')
-    vcode = pytesseract.image_to_string(img)
-    print(vcode)
     return yzm
 
 print(verifyCode())
