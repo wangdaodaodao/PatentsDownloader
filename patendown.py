@@ -11,6 +11,7 @@ session = requests.Session()
 verify_url = 'http://www2.drugfuture.com/cnpat/verify.aspx'
 verifycode_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
 search_url = 'http://www2.drugfuture.com/cnpat/search.aspx'
+securepdf_url = 'http://{host_name}/cnpat/SecurePdf.aspx'
 
 
 def get_pdf(no='CN201510708735.4'):
@@ -32,13 +33,15 @@ def get_pdf(no='CN201510708735.4'):
     }
     response_search = session.post(
         search_url, data=data_search, headers=headers_search)
-    pattern = re.compile('<input name="PatentNo" value=(.*?) type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
+    pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
     search_data = list(pattern.findall(response_search.text)[0])
     host_pattern = re.compile('{document.Download.action="(.*?)"')
     host_name = host_pattern.findall(response_search.text)[
         3].split('//')[1].split('/')[0]
 
-    print()
+    FulltextType_pattern = re.compile('document.Download.FulltextType.value="(.*?)"')
+    FulltextType_value = FulltextType_pattern.findall(response_search.text)[3]
+    print(FulltextType_value)
     data_securepdf = {
         'PatentNo': search_data[0],
         'Name': search_data[1],
@@ -49,30 +52,25 @@ def get_pdf(no='CN201510708735.4'):
         'UrlSD': search_data[6],
         'PublicationDate': search_data[7],
         'ReadyType': search_data[8],
-        'FulltextType': search_data[9],
+        'FulltextType':FulltextType_value,
         'Common': search_data[10],
     }
 
     headers_securepdf['Host'] = host_name
-    securepdf_url = 'http://{}/cnpat/SecurePdf.aspx'.format(host_name)
-    print(securepdf_url, data_securepdf)
-    response_securepdf = session.post(
-        securepdf_url, headers=headers_securepdf, data=data_securepdf)
 
-    headers_getpdf['Host'] = host_name
-    headers_getpdf['Referer'] = 'http://{}/cnpat/SecurePdf.aspx'.format(
-        host_name)
+
+    response_securepdf = session.post(
+        securepdf_url.format(host_name=host_name), headers=headers_securepdf, data=data_securepdf)
+
 
     file_url = 'http://{}/cnpat/package/%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E7%94%B3%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B9%A6{}.pdf'.format(
         host_name, no)
 
-    print(file_url)
+
     with open('{}.pdf'.format(no), 'wb') as code:
-        code.write(session.get(file_url, headers=headers_getpdf).content)
+        code.write(session.get(file_url).content)
     print('下载完毕!!!')
 
 
 get_pdf()
 
-# http://www10.drugfuture.com/cnpat/package/发明专利申请说明书CN201510708735.4.pdf
-# http://www11.drugfuture.com/cnpat/package/发明专利申请说明书CN201510708735.4.pdf
