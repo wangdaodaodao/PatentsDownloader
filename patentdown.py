@@ -42,8 +42,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         
         search_data = list(pattern.findall(response_search.text)[0])
         host_pattern = re.compile('{document.Download.action="(.*?)"')
-        host_name = host_pattern.findall(response_search.text)[
-            3].split('//')[1].split('/')[0]
+        host_name = host_pattern.findall(response_search.text)[3].split('//')[1].split('/')[0]
         FulltextType_pattern = re.compile('document.Download.FulltextType.value="(.*?)"')
         FulltextType_value = FulltextType_pattern.findall(response_search.text)[3]
 
