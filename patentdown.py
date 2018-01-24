@@ -34,7 +34,7 @@ def get_pdf(patent_no='CN201510708735.4'):
     }
     
     response_search = session.post(search_url, data=data_search, headers=headers_search)
-    if '错误' in response_search.text:
+    if '验证码输入错误' in response_search.text:
         print(response_search.text)
     else:
         print('正在获取专利信息并下载：')
@@ -72,4 +72,3 @@ def get_pdf(patent_no='CN201510708735.4'):
         print('下载完毕!!!')
 
 
-get_pdf()

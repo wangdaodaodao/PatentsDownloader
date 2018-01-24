@@ -1,9 +1,23 @@
 from config import *
-from patendown import *
+from patentdown import *
 from patentid import *
 
 
-#获取专利号等信息，参数为关键词，页码数
-get_id()
-#下载专利，参数为专利号
-get_pdf()
+
+
+
+
+
+print('请选择：')
+print('1：输入专利号下载')
+print('2：输入关键词批量下载专利')
+
+
+choice = input('输入1or2：')
+if choice == str(1):
+    number = input('输入专利号:')
+    get_pdf(number)
+elif choice == str(2):
+    keywords = input('输入关键词:')
+    for i in get_id(keywords):
+        get_pdf(i)
