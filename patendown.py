@@ -13,7 +13,7 @@ verifycode_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
 search_url = 'http://www2.drugfuture.com/cnpat/search.aspx'
 securepdf_url = 'http://{host_name}/cnpat/SecurePdf.aspx'
 
-
+#由专利号直接下载专利
 def get_pdf(no='CN201510708735.4'):
     data_verify = {
         'cnpatentno': no,
@@ -39,9 +39,10 @@ def get_pdf(no='CN201510708735.4'):
     host_pattern = re.compile('{document.Download.action="(.*?)"')
     host_name = host_pattern.findall(response_search.text)[
         3].split('//')[1].split('/')[0]
-    FulltextType_pattern = re.compile('document.Download.FulltextType.value="(.*?)"')
+    FulltextType_pattern = re.compile(
+        'document.Download.FulltextType.value="(.*?)"')
     FulltextType_value = FulltextType_pattern.findall(response_search.text)[3]
-    
+
     data_securepdf = {
         'PatentNo': search_data[0],
         'Name': search_data[1],
@@ -52,7 +53,7 @@ def get_pdf(no='CN201510708735.4'):
         'UrlSD': search_data[6],
         'PublicationDate': search_data[7],
         'ReadyType': search_data[8],
-        'FulltextType':FulltextType_value,
+        'FulltextType': FulltextType_value,
         'Common': search_data[10],
     }
 
@@ -65,7 +66,3 @@ def get_pdf(no='CN201510708735.4'):
     with open('{}.pdf'.format(no), 'wb') as code:
         code.write(session.get(file_url).content)
     print('下载完毕!!!')
-
-
-get_pdf()
-
