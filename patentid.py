@@ -17,4 +17,7 @@ def get_id(keywords='python', page_nums=1):
     title = soup.select('.share_summary')
     patents_id = list(set([i.get('onclick').split('=')[2].split("'")[
                       0] for i in soup.select('.stitle')]))
-    return patents_id
+
+    return [ i  for i in patents_id if 'CN' in i]
+
+
