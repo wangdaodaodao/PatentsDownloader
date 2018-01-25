@@ -20,4 +20,6 @@ if choice == str(1):
 elif choice == str(2):
     keywords = input('输入关键词:')
     for i in get_id(keywords):
-        get_pdf(i)
+        if 'CN' in i:
+            get_pdf(i)
+        

@@ -1,4 +1,5 @@
 import re
+import os
 
 import requests
 
@@ -39,7 +40,6 @@ def get_pdf(patent_no='CN201510708735.4'):
     else:
         print('正在获取专利信息并下载：')
         pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
-        
         search_data = list(pattern.findall(response_search.text)[0])
         host_pattern = re.compile('{document.Download.action="(.*?)"')
         host_name = host_pattern.findall(response_search.text)[3].split('//')[1].split('/')[0]
@@ -66,7 +66,16 @@ def get_pdf(patent_no='CN201510708735.4'):
         
         #pdf文件下载
         file_url = 'http://{}/cnpat/package/%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E7%94%B3%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B9%A6{}.pdf'.format(host_name, patent_no)
-        with open('{}.pdf'.format(patent_no), 'wb') as code:
+        
+        dir_path = '.' + os.sep + 'pdf'
+        try:
+            os.mkdir(dir_path)
+        except Exception as e:
+            # print('{}已存在'.format(dir_path))
+            pass
+        file_path = dir_path + os.sep 
+
+        with open(file_path + '{}.pdf'.format(patent_no), 'wb') as code:
             code.write(session.get(file_url).content)
         print('下载完毕!!!')
 
