@@ -10,7 +10,7 @@ from patentid import *
 
 print('请选择：')
 print('1：输入专利号下载')
-print('2：输入关键词批量下载专利')
+print('2：输入关键词批量下载')
 
 
 choice = input('输入1or2：')
