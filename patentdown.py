@@ -35,8 +35,10 @@ def get_pdf(patent_no='CN201510708735.4'):
     }
     
     response_search = session.post(search_url, data=data_search, headers=headers_search)
-    if '验证码输入错误' in response_search.text:
+    if '错误' in response_search.text:
         print(response_search.text)
+    elif '专利号' in response_search.text:
+        print(response_search.text)     
     else:
         print('正在获取专利信息并下载：')
         pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
@@ -46,7 +48,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         FulltextType_pattern = re.compile('document.Download.FulltextType.value="(.*?)"')
         FulltextType_value = FulltextType_pattern.findall(response_search.text)[3]
 
-        #下载界面
+        #下载网页界面
         data_securepdf = {
             'PatentNo': search_data[0],
             'Name': search_data[1],
