@@ -37,6 +37,7 @@ def get_pdf(patent_no='CN201510708735.4'):
     response_search = session.post(search_url, data=data_search, headers=headers_search)
     if '错误' in response_search.text:
         print(response_search.text)
+        
     elif '专利号' in response_search.text:
         tips_pattern = re.compile('<td>(.*?)</td>')
         print(tips_pattern.findall(response_search.text)[0])
