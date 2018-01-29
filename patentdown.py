@@ -68,7 +68,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         response_securepdf = session.post(securepdf_url.format(host_name=host_name), headers=headers_securepdf, data=data_securepdf)
         
         #pdf文件下载
-        file_url = 'http://{}/cnpat/package/%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E7%94%B3%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B9%A6{}.pdf'.format(host_name, patent_no)        
+        file_url = 'http://{url}/cnpat/package/%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E7%94%B3%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B9%A6{numbers}.pdf'        
         dir_path = '.' + os.sep + 'pdf'
         try:
             os.mkdir(dir_path)
@@ -77,7 +77,7 @@ def get_pdf(patent_no='CN201510708735.4'):
             pass
         file_name = dir_path + os.sep + '{name}.pdf' 
         with open(file_name.format(name=patent_no), 'wb') as code:
-            code.write(session.get(file_url).content)
+            code.write(session.get(file_url.format(url=host_name, numbers=patent_no)).content)
         print('下载完毕!!!')
 
 
