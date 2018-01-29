@@ -38,7 +38,8 @@ def get_pdf(patent_no='CN201510708735.4'):
     if '错误' in response_search.text:
         print(response_search.text)
     elif '专利号' in response_search.text:
-        print(response_search.text)     
+        tips_pattern = re.compile('<td>(.*?)</td>')
+        print(tips_pattern.findall(response_search.text)[0])
     else:
         print('正在获取专利信息并下载：')
         pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
@@ -67,8 +68,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         response_securepdf = session.post(securepdf_url.format(host_name=host_name), headers=headers_securepdf, data=data_securepdf)
         
         #pdf文件下载
-        file_url = 'http://{}/cnpat/package/%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E7%94%B3%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B9%A6{}.pdf'.format(host_name, patent_no)
-        
+        file_url = 'http://{}/cnpat/package/%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E7%94%B3%E8%AF%B7%E8%AF%B4%E6%98%8E%E4%B9%A6{}.pdf'.format(host_name, patent_no)        
         dir_path = '.' + os.sep + 'pdf'
         try:
             os.mkdir(dir_path)
