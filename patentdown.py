@@ -79,6 +79,9 @@ def get_pdf(patent_no='CN201510708735.4'):
             # print('{}已存在'.format(dir_path))
             pass
         file_name = dir_path + os.sep + '{name}.pdf' 
+
+
+        
         with open(file_name.format(name=patent_no), 'wb') as code:
             code.write(session.get(file_url.format(url=host_name, numbers=patent_no)).content)
         print('下载完毕!!!')
