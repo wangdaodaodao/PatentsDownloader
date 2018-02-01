@@ -52,13 +52,4 @@ def down_file(url='https://ss2.bdstatic.com/lfoZeXSm1A5BphGlnYG/skin_plus/877.jp
             
 
 
-down_file()
-
- 
-
-
-
-# down_file('https://ss2.bdstatic.com/lfoZeXSm1A5BphGlnYG/skin_plus/877.jpg?2')
-
-# t = ProgressBar()
-# t.refresh()
+            
