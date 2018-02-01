@@ -1,6 +1,6 @@
 import re
 import os
-
+import sys
 import requests
 
 from config import *
@@ -24,7 +24,8 @@ def get_pdf(patent_no='CN201510708735.4'):
     response_verifycode = session.get(verifycode_url)
     with open('yzm.jpg', 'wb') as code:
         code.write(response_verifycode.content)
-    yzm = input('输入验证码：>>')
+    print('输入验证码：>>', end='\r'),
+    yzm = input()
 
     
     #搜索界面
@@ -42,7 +43,8 @@ def get_pdf(patent_no='CN201510708735.4'):
         tips_pattern = re.compile('<td>(.*?)</td>')
         print(tips_pattern.findall(response_search.text)[0])
     else:
-        print('正在获取专利信息并下载：', end='\t')
+        print('正在获取专利信息并下载：', end='\r', flush=False)
+        
         pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
         search_data = list(pattern.findall(response_search.text)[0])
         host_pattern = re.compile('{document.Download.action="(.*?)"')
@@ -79,6 +81,6 @@ def get_pdf(patent_no='CN201510708735.4'):
         file_name = dir_path + os.sep + '{name}.pdf' 
         with open(file_name.format(name=patent_no), 'wb') as code:
             code.write(session.get(file_url.format(url=host_name, numbers=patent_no)).content)
-        print('下载完毕!!!', end='\t')
+        print('下载完毕!!!')
 
 
