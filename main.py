@@ -16,7 +16,7 @@ elif choice == str(2):
         while isDown:
             for i in get_id(keywords, page_num):
                     get_pdf(i)
-            selection = input('第{}页现在完毕，按1或者2选择是否下载下一页：1为是，2为否'.format(page_num))
+            selection = input('第{}页现在完毕，按1或者2选择是否下载下一页：1为是，2为否：'.format(page_num))
             if selection == str(1):
                 page_num += 1                
             elif selection == str(2):

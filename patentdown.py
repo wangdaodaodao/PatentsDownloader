@@ -48,7 +48,6 @@ def get_pdf(patent_no='CN201510708735.4'):
         print(tips_pattern.findall(response_search.text)[0])
     else:
         print('正在获取专利信息并下载：')
-
         pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
         search_data = list(pattern.findall(response_search.text)[0])
         host_pattern = re.compile('{document.Download.action="(.*?)"')
