@@ -15,8 +15,8 @@ elif choice == str(2):
         page_num = 1
         while isDown:
             for i in get_id(keywords, page_num):
-                    get_pdf(i)
-            selection = input('第{}页现在完毕，按1或者2选择是否下载下一页：1为是，2为否：'.format(page_num))
+                get_pdf(i)
+            selection = input('第{}页现在完毕，按1或者2选择是否下载下一页：\n1为是，2为否：'.format(page_num))
             if selection == str(1):
                 page_num += 1                
             elif selection == str(2):
@@ -24,6 +24,7 @@ elif choice == str(2):
                 print('取消下载！')
             else:
                 print('输入错误！')
+                isDown = False
     else:
         print('关键词为空')            
 else:
