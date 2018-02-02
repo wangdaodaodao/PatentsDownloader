@@ -87,7 +87,6 @@ def get_pdf(patent_no='CN201510708735.4'):
             # print('{}已存在'.format(dir_path))
             pass
         file_name = dir_path + os.sep + '{name}.pdf'
-
         if not os.path.exists(file_name):
             down_file(file_url.format(url=host_name, numbers=patent_no),
                       file_name.format(name=patent_no))

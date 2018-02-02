@@ -39,7 +39,6 @@ class ShowProcess():
         self.i = 0
         print()
 
-
 def down_file(url, filename):
     response = requests.get(url, stream=True)
     max_steps = int(response.headers['content-length'])/1024  # 内容体总大小
