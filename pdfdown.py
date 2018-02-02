@@ -3,10 +3,7 @@ import requests
 import sys, time
 
 class ShowProcess():
-    """
-    显示处理进度的类
-    调用该类相关函数即可实现处理进度的显示
-    """
+  
     i = 0 # 当前的处理进度
     max_steps = 0 # 总共需要处理的次数
     max_arrow = 50 #进度条的长度
@@ -15,7 +12,7 @@ class ShowProcess():
     def __init__(self, max_steps):
         self.max_steps = max_steps
         self.i = 0
-        self.show_process()
+        # self.show_process()
 
     # 显示函数，根据当前的处理进度i显示进度
     # 效果为[>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>]100.00%
@@ -47,7 +44,6 @@ def down_file(url, filename):
     process_bar = ShowProcess(max_steps)
     with open(filename, "wb") as file:
         for data in response.iter_content(chunk_size=1024):
-            
             file.write(data)
             process_bar.show_process()
     process_bar.close()
