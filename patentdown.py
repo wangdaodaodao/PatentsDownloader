@@ -24,8 +24,9 @@ def get_pdf(patent_no='CN201510708735.4'):
     response_verifycode = session.get(verifycode_url)
     with open('yzm.jpg', 'wb') as code:
         code.write(response_verifycode.content)
-    print('输入验证码：>>', end='\r'),
-    yzm = input()
+    os.system('start yzm.jpg')
+    yzm = input('输入验证码：>>')
+    os.remove('yzm.jpg')
 
     
     #搜索界面
@@ -43,7 +44,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         tips_pattern = re.compile('<td>(.*?)</td>')
         print(tips_pattern.findall(response_search.text)[0])
     else:
-        print('正在获取专利信息并下载：', end='\r', flush=False)
+        print('正在获取专利信息并下载：')
         
         pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
         search_data = list(pattern.findall(response_search.text)[0])
@@ -81,7 +82,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         file_name = dir_path + os.sep + '{name}.pdf' 
 
         if not os.path.exists(file_name):
-            down_file(file_url.format(url=host_name, numbers=patent_no), file_name)
+            down_file(file_url.format(url=host_name, numbers=patent_no), file_name.format(name=patent_no))
         else:
             print('已存在')
         # with open(file_name.format(name=patent_no), 'wb') as code:
