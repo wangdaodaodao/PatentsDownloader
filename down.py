@@ -27,14 +27,14 @@ class ShowProcess():
         num_arrow = int(self.i * self.max_arrow / self.max_steps) #计算显示多少个'>'
         num_line = self.max_arrow - num_arrow #计算显示多少个'-'
         percent = self.i * 100.0 / self.max_steps #计算完成进度，格式为xx.xx%
-        # process_bar = '[' + '>' * num_arrow + '-' * num_line + ']'\
-                    # + '%.2f' % percent + '%' + '\r' #带输出的字符串，'\r'表示不换行回到最左边        
-        process_bar = '[' + '>' * num_arrow + '-' * num_line + ']' + '\r'
+        process_bar = '[' + '>' * num_arrow + '-' * num_line + ']'\
+                    + '%.2f' % percent + '%' + '\r' #带输出的字符串，'\r'表示不换行回到最左边        
+        # process_bar = '[' + '>' * num_arrow + '-' * num_line + ']' + '\r'
         sys.stdout.write(process_bar) #这两句打印字符到终端
         sys.stdout.flush()
 
     def close(self):
-        words = '下载完毕' + ' '*self.max_arrow
+        words = '下载完毕!!!!' + ' '*self.max_arrow
         sys.stdout.write(words)
         sys.stdout.flush()
         self.i = 0
