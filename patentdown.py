@@ -6,6 +6,7 @@ import requests
 from config import *
 from patentid import *
 from pdfdown import *
+
 session = requests.Session()
 
 verify_url = 'http://www2.drugfuture.com/cnpat/verify.aspx'
