@@ -33,9 +33,10 @@ class ShowProcess():
         sys.stdout.write(process_bar) #这两句打印字符到终端
         sys.stdout.flush()
 
-    def close(self, words='done'):
-        print ()
-        print (words)
+    def close(self):
+        words = '下载完毕' + ' '*self.max_arrow
+        sys.stdout.write(words)
+        sys.stdout.flush()
         self.i = 0
 
 def down_file(url, filename):
@@ -50,3 +51,4 @@ def down_file(url, filename):
             process_bar.show_process()
     process_bar.close()
             
+down_file('http://pub.bcbay.com/upload_files/image/201605/20160514_14632806993828.jpg', '1.jpg')
