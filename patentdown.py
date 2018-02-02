@@ -29,6 +29,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         code.write(response_verifycode.content)
     os.system('start yzm.jpg')
     yzm = input('输入验证码：>>')
+    os.remove('yzm.jpg')
 
     # 搜索界面
     data_search = {
