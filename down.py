@@ -38,6 +38,7 @@ class ShowProcess():
         sys.stdout.write(words)
         sys.stdout.flush()
         self.i = 0
+        print()
 
 def down_file(url, filename):
     response = requests.get(url, stream=True)
@@ -51,4 +52,4 @@ def down_file(url, filename):
             process_bar.show_process()
     process_bar.close()
             
-down_file('http://pub.bcbay.com/upload_files/image/201605/20160514_14632806993828.jpg', '1.jpg')
+# down_file('http://pub.bcbay.com/upload_files/image/201605/20160514_14632806993828.jpg', '1.jpg')
