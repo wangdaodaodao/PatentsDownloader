@@ -30,7 +30,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         code.write(response_verifycode.content)
     os.system('start yzm.jpg')
     yzm = input('输入验证码：>>')
-    os.remove('yzm.jpg')
+    # os.remove('yzm.jpg')
 
     # 搜索界面
     data_search = {
@@ -87,8 +87,4 @@ def get_pdf(patent_no='CN201510708735.4'):
             # print('{}已存在'.format(dir_path))
             pass
         file_name = dir_path + os.sep + '{name}.pdf'
-        if not os.path.exists(file_name):
-            down_file(file_url.format(url=host_name, numbers=patent_no),
-                      file_name.format(name=patent_no))
-        else:
-            print('已存在')
+        down_file(file_url.format(url=host_name, numbers=patent_no), file_name.format(name=patent_no))
