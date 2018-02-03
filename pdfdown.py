@@ -5,19 +5,17 @@ import time
 
 
 class ShowProcess():
-
     i = 0  # 当前的处理进度
     max_steps = 0  # 总共需要处理的次数
     max_arrow = 50  # 进度条的长度
-
     # 初始化函数，需要知道总共的处理次数
+
     def __init__(self, max_steps):
         self.max_steps = max_steps
         self.i = 0
-        # self.show_process()
-
     # 显示函数，根据当前的处理进度i显示进度
     # 效果为[>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>]100.00%
+
     def show_process(self, i=None):
         if i is not None:
             self.i = i
@@ -33,15 +31,16 @@ class ShowProcess():
         sys.stdout.flush()
 
     def close(self):
-        words = '下载完毕!!!!' + ' '*self.max_arrow
+        words = '下载完毕!!!!' + ' ' * self.max_arrow
         sys.stdout.write(words)
         sys.stdout.flush()
         self.i = 0
         print()
 
+
 def down_file(url, filename):
     response = requests.get(url, stream=True)
-    max_steps = int(response.headers['content-length'])/1024  # 内容体总大小
+    max_steps = int(response.headers['content-length']) / 1024  # 内容体总大小
     print('专利号：{}  文件大小:{:.2f}k'.format(filename.split('\\')[-1], max_steps))
     process_bar = ShowProcess(max_steps)
     with open(filename, "wb") as file:
