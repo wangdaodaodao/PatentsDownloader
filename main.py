@@ -3,6 +3,7 @@ from patentdown import *
 from patentid import *
 import os
 
+
 print('请选择：\n1：输入专利号下载\n2：输入关键词批量下载')
 isDown = True
 check = True
@@ -22,10 +23,11 @@ elif choice == str(2):
                 else:
                     print('专利{}已存在。'.format(i))
             while check:
-                selection = input('第{}页下载完毕，按1或者2选择是否下载下一页：\n1为是，2为否：'.format(page_num))
+                selection = input(
+                    '第{}页下载完毕，按1或者2选择是否下载下一页：\n1为是，2为否：'.format(page_num))
                 if selection == str(1):
                     page_num += 1
-                    check = False                
+                    check = False
                 elif selection == str(2):
                     isDown = False
                     print('取消下载！')
@@ -33,7 +35,6 @@ elif choice == str(2):
                 else:
                     print('输入错误,重新输入！')
     else:
-        print('关键词为空。')            
+        print('关键词为空。')
 else:
     print('输入错误请返回。')
-
