@@ -32,7 +32,7 @@ def get_pdf(patent_no='CN201510708735.4'):
         os.system('start yzm.jpg')
     yzm = input('输入验证码：>>')
 
-    # 搜索界面
+    # 搜索页面
     data_search = {
         'cnpatentno': patent_no,
         'common': '1',
