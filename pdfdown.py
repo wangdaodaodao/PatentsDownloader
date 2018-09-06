@@ -40,13 +40,16 @@ class ShowProcess():
 
 def down_file(url, filename):
     response = requests.get(url, stream=True)
-    max_steps = int(response.headers['content-length']) / 1024  # 内容体总大小
-    print('专利号：{}  文件大小:{:.2f}k'.format(filename.split('\\')[-1], max_steps))
-    process_bar = ShowProcess(max_steps)
-    with open(filename, "wb") as file:
-        for data in response.iter_content(chunk_size=1024):
-            file.write(data)
-            process_bar.show_process()
-    process_bar.close()
-
-# down_file('http://pub.bcbay.com/upload_files/image/201605/20160514_14632806993828.jpg', '1.jpg')
+    if response.headers['content-length'] > 100:
+        max_steps = int(response.headers['content-length']) / 1024  # 内容体总大小
+        
+        print('专利号：{}  文件大小:{:.2f}k'.format(filename.split('\\')[-1], max_steps))
+        process_bar = ShowProcess(max_steps)
+        with open(filename, "wb") as file:
+            for data in response.iter_content(chunk_size=1024):
+                file.write(data)
+                process_bar.show_process()
+        process_bar.close()
+    else:
+        print('下载失败！')
+down_file('http://pub.bcbay.com/upload_files/image/201605/20160514_14632806993828.jpg', '1.jpg')
