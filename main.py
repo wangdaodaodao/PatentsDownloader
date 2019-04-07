@@ -5,7 +5,6 @@ import os
 
 
 print('请选择：\n1：输入专利号下载\n2：输入关键词批量下载')
-
 isDown = True
 check = True
 
