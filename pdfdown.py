@@ -42,8 +42,7 @@ def down_file(url, filename):
     response = requests.get(url, stream=True)
     if int(response.headers['content-length'])/1024 > 10:
         # print(response.headers['content-length'])
-        max_steps = int(response.headers['content-length']) / 1024  # 内容体总大小
-        
+        max_steps = int(response.headers['content-length']) / 1024  # 内容体总大小        
         print('专利号：{}  文件大小:{:.2f}k'.format(filename.split('\\')[-1], max_steps))
         process_bar = ShowProcess(max_steps)
         with open(filename, "wb") as file:
@@ -53,4 +52,3 @@ def down_file(url, filename):
         process_bar.close()
     else:
         print('下载失败！')
-# down_file('http://pub.bcbay.com/upload_files/image/201605/20160514_14632806993828.jpg', '1.jpg')

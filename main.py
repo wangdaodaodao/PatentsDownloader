@@ -19,6 +19,7 @@ elif choice == str(2):
         while isDown:
             for i in get_id(keywords, page_num):
                 if not os.path.exists('pdf' + os.sep + '{}.pdf'.format(i)):
+                    print(i)
                     get_pdf(i)
                 else:
                     print('专利{}已存在。'.format(i))

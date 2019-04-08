@@ -1,3 +1,8 @@
+verify_url = 'http://www2.drugfuture.com/cnpat/verify.aspx'
+verifycode_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
+search_url = 'http://www2.drugfuture.com/cnpat/search.aspx'
+securepdf_url = 'http://{host_name}/cnpat/SecurePdf.aspx'
+
 headers_verify = {
     'Accept-Encoding': 'gzip, deflate',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
