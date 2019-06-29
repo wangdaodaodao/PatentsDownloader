@@ -38,6 +38,8 @@ def get_yzm(patent_no):
         'common': '1',
         'ValidCode': yzm,
     }
+        # print('正在查询专利信息。。。')
+
         response_search = session.post(search_url, data=data_search, headers=headers_search)
         if '错误' in response_search.text:
             print(response_search.text)            
@@ -45,8 +47,10 @@ def get_yzm(patent_no):
             tips_pattern = re.compile('<td>(.*?)</td>')
             print(tips_pattern.findall(response_search.text)[0])
             return None
-            break       
-        else:                    
+            break
+        else:
+            print('验证码正确，获得网页查询页面信息')
+
             return response_search.text
             break
 
@@ -76,14 +80,18 @@ def get_pdf_info(response):
         'Common': search_data[10],
     }
     response_securepdf = session.post(securepdf_url.format(host_name= host_name), headers= headers_securepdf, data=data_securepdf)
-    # print(data_securepdf.get('PatentType'))
+
     if 'wgsj' in data_securepdf.get('PatentType'):
         type_name = urllib.parse.unquote('外观设计专利授权说明书')
     elif 'fmzl' in data_securepdf.get('PatentType'):
         type_name = urllib.parse.unquote('发明专利申请说明书')
-
+    else:
+        pass
     file_url = 'http://{url}/cnpat/package/{type_name}CN{numbers}.pdf'.format(url=host_name, type_name=type_name, numbers=data_securepdf.get('PatentNo'))
-    file_name = dir_path + os.sep + '{name}-{number}.pdf'.format(name=urllib.parse.unquote(data_securepdf.get('Name')), number=data_securepdf.get('PatentNo'))
+    p_name = '{name}-CN{number}.pdf'.format(name=urllib.parse.unquote(data_securepdf.get('Name')), number=data_securepdf.get('PatentNo'))
+    file_name = dir_path + os.sep + p_name
+    print('已经获取到pdf文件地址，')
+    print(p_name, file_url)
     return file_name, file_url
 
 
@@ -102,7 +110,7 @@ def down_pdf(name, url):
         print('文件已存在！')
     if os.path.getsize(name) < 10000:
         print('下载失败')
-        shutil.remove(name)
+        shutil.move(name)
         
 
 def get_pdf(patent_no='CN201510708735.4'):
@@ -110,3 +118,4 @@ def get_pdf(patent_no='CN201510708735.4'):
     if resp:
         info = get_pdf_info(resp)
         down_pdf(info[0], info[1])
+
