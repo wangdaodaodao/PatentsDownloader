@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+
+"""
+    作者:     王导导
+    版本:     1.0
+    日期:     2019/02/11
+    项目名称： 专利下载
+
+"""
+
 from config import *
 from patentdown import *
 from patentid import *

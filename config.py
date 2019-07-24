@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+
+"""
+    作者:     王导导
+    版本:     1.0
+    日期:     2019/02/11
+    项目名称： 专利下载
+
+"""
+
+
 verify_url = 'http://www2.drugfuture.com/cnpat/verify.aspx'
 verifycode_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
 search_url = 'http://www2.drugfuture.com/cnpat/search.aspx'
