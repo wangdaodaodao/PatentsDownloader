@@ -12,5 +12,6 @@ def get_id(keywords='python', nums=1):
     soup = BeautifulSoup(response.text, 'lxml')
     title = soup.select('.share_summary')
     # print(title)
-    patents_id = list(set([i.get('onclick').split('=')[2].split("'")[0] for i in soup.select('.stitle')]))
+    patents_id = list(set([i.get('onclick').split('=')[2].split("'")[
+                      0] for i in soup.select('.stitle')]))
     return [i for i in patents_id if 'CN' in i]

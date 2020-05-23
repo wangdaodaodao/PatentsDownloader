@@ -8,10 +8,9 @@
 
 """
 
-import requests
-
 import sys
 import time
+import requests
 
 
 class ShowProcess():
@@ -52,8 +51,9 @@ def down_file(url, filename):
     response = requests.get(url, stream=True)
     if int(response.headers['content-length'])/1024 > 10:
         # print(response.headers['content-length'])
-        max_steps = int(response.headers['content-length']) / 1024  # 内容体总大小        
-        print('专利号：{}  文件大小:{:.2f}k'.format(filename.split('\\')[-1], max_steps))
+        max_steps = int(response.headers['content-length']) / 1024  # 内容体总大小
+        print('专利号：{}  文件大小:{:.2f}k'.format(
+            filename.split('\\')[-1], max_steps))
         process_bar = ShowProcess(max_steps)
         with open(filename, "wb") as file:
             for data in response.iter_content(chunk_size=1024):
