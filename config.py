@@ -8,7 +8,6 @@
 
 """
 
-
 verify_url = 'http://www2.drugfuture.com/cnpat/verify.aspx'
 verifycode_url = 'http://www2.drugfuture.com/cnpat/verifyCode.aspx'
 search_url = 'http://www2.drugfuture.com/cnpat/search.aspx'
