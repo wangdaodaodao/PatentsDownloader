@@ -5,7 +5,6 @@
     版本:     1.0
     日期:     2019/02/11
     项目名称： 专利下载
-
 """
 
 from config import *
@@ -17,6 +16,9 @@ import os
 print('请选择：\n1：输入专利号下载\n2：输入关键词批量下载')
 isDown = True
 check = True
+
+
+
 
 choice = input('输入1or2：')
 if choice == str(1):
