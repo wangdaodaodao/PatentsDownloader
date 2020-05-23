@@ -6,10 +6,12 @@
     项目名称： 专利下载
 """
 
+import os
+
 from config import *
 from patentdown import *
 from patentid import *
-import os
+
 
 def keywords_download(keywords):
     pass
