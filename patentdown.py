@@ -108,10 +108,29 @@ def get_pdf_info(response):
     return file_name, file_url
 
 
+
+def down_pdf_file(name, url):
+
+    response = session.get(url)
+    length = int(response.headers.get('content-length'))
+    # print(response.headers)
+    label = '正在下载专利<{}>,{:.2f}Kb'.format(name.split('/')[-1], length/1024)
+    print(label)
+    with click.progressbar(length=length, label=label) as progressbar:
+        with open(name, 'wb') as code:  # 下载文件
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    code.write(chunk)
+                    # print(label)
+
+                    progressbar.update(1024)
+
+down_pdf_file('1.deb','https://files.cnblogs.com/files/wangdaodao/deb.zip')
 def down_pdf(name, url):
     if not os.path.exists(name):
         response = session.get(url, headers=headers_securepdf)
         length = int(response.headers.get('content-length'))
+        print(response.headers)
         label = '正在下载专利<{}>,{:.2f}Kb'.format(name.split('/')[-1], length/1024)
         with click.progressbar(length=length, label=label) as progressbar:
             with open(name, 'wb') as code:  # 下载文件
@@ -127,21 +146,17 @@ def down_pdf(name, url):
 
 
 def get_pdf(patent_no, patent_name):
-    # if os.path.exists()
     resp = get_yzm(patent_no)
     if resp:
         info = get_pdf_info(resp)
-        # print(info)
         if patent_name:
             file_name = dir_path + os.sep + patent_name
             down_pdf(file_name, info[1])
         else:
             print(info[0])
-            # print(patent_name,info[0])
-
-
             down_pdf(info[0], info[1])
 
 
 # get_pdf('CN201510708735.4', '1.pdf')
 # get_pdf('CN201510708735.4', False)
+# down_file('','1.png' )
