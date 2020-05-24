@@ -7,6 +7,7 @@
 """
 
 import os
+import time
 
 from config import *
 from patentdetail import *
@@ -31,13 +32,19 @@ if __name__ == "__main__":
             while isDown:
                 patent_info = get_id(keywords, int_page)
                 if not patent_info:
+                    print('查询不到专利，已停止！')
                     break
                 for p_detail in patent_info:
-                    print(p_detail.get('patent_id'), p_detail.get(
-                        'patent_author'), p_detail.get('patent_name'))
+                    tt = time.strftime('%m.%d %H:%M:%S',time.localtime())
+                    print('[{}]查询到专利信息：{}{}{}'.format(tt, p_detail.get('patent_id'), p_detail.get(
+                        'patent_author'), p_detail.get('patent_name')))
                     name = '{1}-{0}.pdf'.format(p_detail.get('patent_id'),
                                                 p_detail.get('patent_name'))
-                get_pdf(p_detail.get('patent_id'), name)    
+                    file_name = '{}/pdf/{}'.format(os.getcwd(), name)
+                    if not os.path.exists(file_name):
+                        get_pdf(p_detail.get('patent_id'), name)
+                    else:
+                        print('[{}]专利已存在。'.format(tt)) 
                 choice = input('第{}页下载完毕，是否继续下载，请按Y或者N：'.format(int_page))
                 while isCheck:    
                     if choice == 'N' or choice=='n':

@@ -12,7 +12,6 @@ base_url = 'http://g.wanfangdata.com.cn/search/searchList.do?searchType=patent&p
 def get_id(keywords='python', nums=1):
     patent_detail = []
     url = base_url.format(patent_keywords=keywords, page_nums=nums)
-    # print(url)
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
     detail = soup.select('.ResultCont')
@@ -28,13 +27,11 @@ def get_id(keywords='python', nums=1):
         if x:
             p_id = 'CN{}'.format(x[0])
         else:
-            p_id = None
-        
+            p_id = None       
         name_pattern = re.compile('target="_blank">(.*?)</a>')
         y = name_pattern.findall(text)
         if y:
             p_name = y[0].replace('<em>', '').replace('</em>', '')
-
         author_pattern = re.compile('target="_blank">(.*?)</a></span>')
         z = author_pattern.findall(text)
         if z:
@@ -52,6 +49,3 @@ def get_id(keywords='python', nums=1):
     return patent_detail
 
 
-# for xxxx in (get_id('JAVA', 4)):
-#     print(xxxx)
-# # print(get_id('JAVA', 2))

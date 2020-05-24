@@ -8,13 +8,16 @@
 
 """
 
-import re,time
 import os
-import urllib
-import click
-import shutil
-import requests
 import platform
+import re
+import shutil
+import time
+import urllib
+
+import click
+import requests
+
 from config import *
 from pdfdown import *
 
@@ -61,7 +64,7 @@ def get_yzm(patent_no):
             return None
             break
         else:
-            print('验证码正确，获得网页查询页面信息')
+            print('[{}]验证码正确，正在获取专利信息'.format(time.strftime('%m.%d %H:%M:%S',time.localtime())))
             return response_search.text
             break
 
@@ -103,14 +106,13 @@ def get_pdf_info(response):
     p_name = '{name}-CN{number}.pdf'.format(name=urllib.parse.unquote(
         data_securepdf.get('Name')), number=data_securepdf.get('PatentNo'))
     file_name = dir_path + os.sep + p_name
-    print('已经获取到pdf文件地址，')
+    print('[{}]已经获取到pdf文件地址并下载：'.format(time.strftime('%m.%d %H:%M:%S',time.localtime())))
     # print(p_name, file_url)
     return file_name, file_url
 
 
 
 def down_pdf_file(name, url):
-
     response = session.get(url)
     length = int(response.headers.get('content-length'))
     # print(response.headers)
@@ -125,12 +127,11 @@ def down_pdf_file(name, url):
 
                     progressbar.update(1024)
 
-down_pdf_file('1.deb','https://files.cnblogs.com/files/wangdaodao/deb.zip')
+# down_pdf_file('1.deb','https://files.cnblogs.com/files/wangdaodao/deb.zip')
 def down_pdf(name, url):
     if not os.path.exists(name):
         response = session.get(url, headers=headers_securepdf)
         length = int(response.headers.get('content-length'))
-        print(response.headers)
         label = '正在下载专利<{}>,{:.2f}Kb'.format(name.split('/')[-1], length/1024)
         with click.progressbar(length=length, label=label) as progressbar:
             with open(name, 'wb') as code:  # 下载文件
