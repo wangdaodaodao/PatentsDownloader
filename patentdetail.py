@@ -5,16 +5,29 @@ import lxml
 import requests
 from bs4 import BeautifulSoup
 
-base_url = 'http://g.wanfangdata.com.cn/search/searchList.do?searchType=patent&pageSize=50&page={page_nums}&searchWord={patent_keywords}&order=correlation&showType=detail&isCheck=check&isHit=&isHitUnit=&firstAuthor=false&rangeParame=all'
-# 获取专利号,传入的参数为关键词， 页码数
+headers = {
+'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8;,',
+'Host': 's.wanfangdata.com.cn',
+'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.5 Safari/605.1.15',
+'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+'Accept-Encoding': 'gzip, deflate, br',
+'Connection': 'keep-alive',
 
+}
+
+
+# 获取专利号,传入的参数为关键词， 页码数
+base_url = 'https://s.wanfangdata.com.cn/patent?q={patent_keywords}&p={page_nums}'
 
 def get_id(keywords='python', nums=1):
     patent_detail = []
     url = base_url.format(patent_keywords=keywords, page_nums=nums)
-    response = requests.get(url)
+    print(url)
+    response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, 'lxml')
-    detail = soup.select('.ResultCont')
+    detail = soup.select('.title-id-hidden')
+    # print(soup)
+    print(detail)
     for a in detail:
         patents_info = {
             'patent_id': '',
@@ -49,3 +62,4 @@ def get_id(keywords='python', nums=1):
     return patent_detail
 
 
+get_id()

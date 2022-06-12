@@ -143,7 +143,7 @@ def down_pdf(name, url):
         print('文件已存在！')
     if os.path.getsize(name) < 10000:
         print('下载失败')
-        shutil.move(name)
+        os.remove(name)
 
 
 def get_pdf(patent_no, patent_name):
@@ -156,6 +156,8 @@ def get_pdf(patent_no, patent_name):
         else:
             print(info[0])
             down_pdf(info[0], info[1])
+            print('[{}]已经获取到pdf文件地址并下载：'.format(time.strftime('%m.%d %H:%M:%S',time.localtime())))
+
 
 
 # get_pdf('CN201510708735.4', '1.pdf')
