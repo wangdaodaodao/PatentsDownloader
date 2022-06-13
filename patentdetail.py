@@ -17,7 +17,7 @@ headers = {
 base_url = 'https://s.wanfangdata.com.cn/patent?q={patent_keywords}&p={page_nums}'
 
 
-def get_patent_nuber(keywords, page_nums):
+def get_patent_nuber(keywords, page_nums=1):
     url = 'https://s.wanfangdata.com.cn/SearchService.SearchService/search'
     deserialize_data = {
         "1": [
