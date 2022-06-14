@@ -6,7 +6,13 @@
     项目名称： 专利下载
 """
 
+
+import webbrowser
+
+
+
 import os
+from pickle import TRUE
 import time
 
 from config import *
@@ -19,44 +25,42 @@ if __name__ == "__main__":
     isDown = True
     isCheck = True
     while not isStop:
-        input_word = input('请选择：\n1.专利号下载\n2.关键词下载\n3.e退出程序\n请输入>>:')
-        if input_word == str(1):
+        input_word = input('请选择：\n0.关键词查询专利\n1.已经有专利号直接下载\3.e退出程序\n请输入>>:')
+        if input_word == str(0):
+            
+            keywords = input('请输入要查询关键词：')
+            url = 'https://s.wanfangdata.com.cn/patent?q={patent_keywords}'.format(patent_keywords=keywords)
+            webbrowser.open(url)
+            
+            select_2 = input('1.输入专利号下载专利\n2.下载本页所有专利\n请选择：')
+            if select_2 == str(1):
+                input_pantent_no = input('请输入专利号吧:')
+                get_pantent_pdf(input_pantent_no)
+
+                isStop = True
+            else:
+                print('不好意思哟,等在等待功能完善!')
+                isStop = True
+
+        elif input_word == str(1):
             keywords = input('请输入专利号：')
             # 引入False主要是为了事先只有专利号下载的方式
-            get_pdf(keywords, False)
+            get_pantent_pdf(keywords, False)
             # 跳出循环
             isStop = True
-        elif input_word == str(2):
-            keywords = input('请输入关键词儿：')
-            int_page = 1
-            while isDown:
-                patent_info = get_id(keywords, int_page)
-                if not patent_info:
-                    print('查询不到专利，已停止！')
+        
+            while isCheck:
+                if choice == 'N' or choice == 'n':
+                    isCheck = False
+                    isDown = False
+                    isStop = True
+                    print('已退出程序。')
+                elif choice == 'Y' or choice == 'y':
+                    int_page += 1
                     break
-                for p_detail in patent_info:
-                    tt = time.strftime('%m.%d %H:%M:%S', time.localtime())
-                    print('[{}]查询到专利信息：{}{}{}'.format(tt, p_detail.get('patent_id'), p_detail.get(
-                        'patent_author'), p_detail.get('patent_name')))
-                    name = '{1}-{0}.pdf'.format(p_detail.get('patent_id'),
-                                                p_detail.get('patent_name'))
-                    file_name = '{}/pdf/{}'.format(os.getcwd(), name)
-                    if not os.path.exists(file_name):
-                        get_pdf(p_detail.get('patent_id'), name)
-                    else:
-                        print('[{}]专利已存在。'.format(tt))
-                choice = input('第{}页下载完毕，是否继续下载，请按Y或者N：'.format(int_page))
-                while isCheck:
-                    if choice == 'N' or choice == 'n':
-                        isCheck = False
-                        isDown = False
-                        isStop = True
-                        print('已退出程序。')
-                    elif choice == 'Y' or choice == 'y':
-                        int_page += 1
-                        break
-                    else:
-                        choice = input('输入错误重新输入（Y或者N）:')
+                else:
+                    choice = input('输入错误重新输入（Y或者N）:')
+
         elif input_word == 'e':
             isStop = True
             print('已退出')

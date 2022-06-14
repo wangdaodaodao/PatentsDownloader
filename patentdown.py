@@ -2,9 +2,9 @@
 
 """
     作者:     王导导
-    版本:     1.0
-    日期:     2019/02/11
-    项目名称： 专利下载
+    版本:     2.0
+    日期:     2022/06/14
+    项目名称： 通过专利号,在药物在线网站下载专利
 
 """
 
@@ -32,50 +32,44 @@ dir_path = os.getcwd() + os.sep + 'pdf'
 if not os.path.exists(dir_path):
     os.mkdir(dir_path)
 
-
+#查询专利前需要处理验证码页面
 def get_yzm(patent_no):
     while True:
         data_verify = {
             'cnpatentno': patent_no,
-            'Common': '1'
-        }
-        response_verify = session.post(
-            verify_url, headers=headers_verify, data=data_verify)
-        # print(response_verify.text)
+            'Common': '1' }
+        response_verify = session.post(verify_url, headers=headers_verify, data=data_verify)
         response_verifycode = session.get(verifycode_url)
         with open('yzm.jpg', 'wb') as code:
             code.write(response_verifycode.content)
+        
         if platform.system() == 'Windows':
             os.system('start yzm.jpg')
+
         yzm = input('输入验证码：>>')
         data_search = {
             'cnpatentno': patent_no,
             'common': '1',
-            'ValidCode': yzm,
-        }
-        # print('正在查询专利信息。。。')
-        response_search = session.post(
-            search_url, data=data_search, headers=headers_search)
+            'ValidCode': yzm, }
+        response_search = session.post(search_url, data=data_search, headers=headers_search)
         if '错误' in response_search.text:
             print(response_search.text)
         elif '专利号' in response_search.text:
             tips_pattern = re.compile('<td>(.*?)</td>')
-            print(tips_pattern.findall(response_search.text)[0])
             return None
             break
         else:
-            print('[{}]验证码正确，正在获取专利信息'.format(time.strftime('%m.%d %H:%M:%S',time.localtime())))
+            print('[{}]验证码正确，准备获取专利信息'.format(time.strftime('%m.%d %H:%M:%S',time.localtime())))
             return response_search.text
             break
 
-
+#通过验证码后的页面response包含专利信息
 def get_pdf_info(response):
-    FulltextType_pattern = re.compile(
-        'document.Download.FulltextType.value="(.*?)"')
+    FulltextType_pattern = re.compile('document.Download.FulltextType.value="(.*?)"')
     FulltextType_value = FulltextType_pattern.findall(response)[3]
     host_name_pattern = re.compile('{document.Download.action="(.*?)"')
-    host_name = host_name_pattern.findall(
-        response)[3].split('//')[1].split('/')[0]
+    host_name = host_name_pattern.findall(response)[4].split('//')[1].split('/')[0]
+
     headers_securepdf['Host'] = host_name
     pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" /><input name="Name" value="(.*?)" type="hidden" /><input name="PatentType" value="(.*?)" type="hidden" /><input name="PageNumFM" value="(.*?)" type="hidden" /><input name="UrlFM" value="(.*?)" type="hidden" /><input name="PageNumSD" value="(.*?)" type="hidden" /><input name="UrlSD" value="(.*?)"type="hidden"  /><input name="PublicationDate" value="(.*?)" type="hidden" /><input name="ReadyType" value="(.*?)" type="hidden" /><input name="FulltextType" value="(.*?)" type="hidden" /><input name="Common" value="(.*?)" type="hidden" /></form>')
     search_data = list(pattern.findall(response)[0])
@@ -106,7 +100,7 @@ def get_pdf_info(response):
     p_name = '{name}-CN{number}.pdf'.format(name=urllib.parse.unquote(
         data_securepdf.get('Name')), number=data_securepdf.get('PatentNo'))
     file_name = dir_path + os.sep + p_name
-    print('[{}]已经获取到pdf文件地址并下载：'.format(time.strftime('%m.%d %H:%M:%S',time.localtime())))
+    print('[{}]已经获取到pdf文件地址并准备下载：'.format(time.strftime('%m.%d %H:%M:%S',time.localtime())))
     # print(p_name, file_url)
     return file_name, file_url
 
@@ -146,20 +140,17 @@ def down_pdf(name, url):
         os.remove(name)
 
 
-def get_pdf(patent_no, patent_name):
+
+def get_pantent_pdf(patent_no):
     resp = get_yzm(patent_no)
     if resp:
         info = get_pdf_info(resp)
-        if patent_name:
-            file_name = dir_path + os.sep + patent_name
-            down_pdf(file_name, info[1])
-        else:
-            print(info[0])
-            down_pdf(info[0], info[1])
-            print('[{}]已经获取到pdf文件地址并下载：'.format(time.strftime('%m.%d %H:%M:%S',time.localtime())))
+
+        
+        down_pdf(info[0], info[1])
+    else:
+        print('抱歉,无法查询到专利,请检查专利号是否正确')
 
 
 
-# get_pdf('CN201510708735.4', '1.pdf')
-# get_pdf('CN201510708735.4', False)
-# down_file('','1.png' )
+
