@@ -2,12 +2,12 @@
 """
     项目名称： 专利下载
     作者:     王导导
-    版本:     2.1
+    版本:     2.2
     日期:     2024/09/07
-    更新内容:  增加了菜单系统，改进了用户交互
+    更新内容:  增加了专利号格式验证，修复了函数导入问题
     
 
-    上一版本:  2.0
+    上一版本:  2.1
     上一日期:  2020/05/23
 """
 
@@ -19,21 +19,28 @@ import urllib.parse  # 添加这行导入
 
 from config import *
 from patentdetail import *
-from patentdown import *
+from patentdown import get_pantent_pdf  # 确保这里的拼写与 patentdown.py 中的函数名一致
+
+def validate_patent_number(patent_no):
+    """验证专利号格式"""
+    # 移除可能的空格
+    patent_no = patent_no.strip()
+    # 检查长度是否至少为12位
+    return len(patent_no) >= 12
 
 def main_menu():
     while True:
         print("\n------主菜单------")
-        print("0. *关键词*查询专利")
-        print("1. *已有专利号*直接下载")
-        print("2. 退出程序")
-        choice = input("请选择 (0/1/2): ")
+        print("1. *关键词*查询专利")
+        print("2. *已有专利号*直接下载")
+        print("3. 退出程序")
+        choice = input("请选择 (1/2/3): ")
 
-        if choice == '0':
+        if choice == '1':
             keyword_search_menu()
-        elif choice == '1':
-            direct_download_menu()
         elif choice == '2':
+            direct_download_menu()
+        elif choice == '3':
             print("程序已退出")
             break
         else:
@@ -43,7 +50,7 @@ def keyword_search_menu():
     while True:
         keywords = input('请输入要查询--关键词-- (输入 "b" 返回主菜单, "q" 退出程序): ')
         if keywords.lower() == 'b':
-            return
+            returnZ
         elif keywords.lower() == 'q':
             print("程序已退出")
             exit()
@@ -54,7 +61,7 @@ def keyword_search_menu():
 
         while True:
             print("\n1. **输入专利号**下载专利")
-            print("2. 下载本页所有专利 (功能待完善)")
+            print("2. 下载本��所有专利 (功能待完善)")
             print("3. 返回**关键词搜索**")
             print("4. 返回**主菜单**")
             print("5. 退出程序")
@@ -62,7 +69,13 @@ def keyword_search_menu():
 
             if select_2 == '1':
                 input_patent_no = input('请输入专利号: ')
-                get_pantent_pdf(input_patent_no)
+                if validate_patent_number(input_patent_no):
+                    try:
+                        get_pantent_pdf(input_patent_no)  # 确保这里的函数名与导入的名称一致
+                    except Exception as e:
+                        print(f"下载过程中出现错误: {str(e)}")
+                else:
+                    print("专利号格式错误。请确保输入的专利号至少包含12位字符。")
             elif select_2 == '2':
                 print('不好意思哟,等在等待功能完善!')
             elif select_2 == '3':
@@ -80,7 +93,13 @@ def direct_download_menu():
         patent_no = input("请输入专利号（输入'q'返回上级菜单）：")
         if patent_no.lower() == 'q':
             break
-        get_patent_pdf(patent_no)  # 修正这里的函数名
+        if validate_patent_number(patent_no):
+            try:
+                get_pantent_pdf(patent_no)  # 确保这里的函数名与导入的名称一致
+            except Exception as e:
+                print(f"下载过程中出现错误: {str(e)}")
+        else:
+            print("专利号格式错误。请确保输入的专利号至少包含12位字符。")
 
 if __name__ == "__main__":
     main_menu()
