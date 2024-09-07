@@ -14,10 +14,10 @@ import re
 import shutil
 import time
 import urllib
-
-import click
+import sys
 import requests
 
+import click
 from config import *
 from pdfdown import *
 
@@ -106,20 +106,57 @@ def get_pdf_info(response):
 
 
 
-def down_pdf_file(name, url):
-    response = session.get(url)
-    length = int(response.headers.get('content-length'))
-    # print(response.headers)
-    label = '正在下载专利<{}>,{:.2f}Kb'.format(name.split('/')[-1], length/1024)
-    print(label)
-    with click.progressbar(length=length, label=label) as progressbar:
-        with open(name, 'wb') as code:  # 下载文件
-            for chunk in response.iter_content(chunk_size=1024):
+def download_pdf(file_name, file_url):
+    """下载PDF文件，检查是否已存在，并验证下载是否成功"""
+    try:
+        # 获取远程文件信息
+        response = session.head(file_url, headers=headers_securepdf)
+        remote_size = int(response.headers.get('content-length', 0))
+        remote_name = os.path.basename(file_name)
+
+        # 检查本地文件是否存在
+        if os.path.exists(file_name):
+            local_size = os.path.getsize(file_name)
+            local_name = os.path.basename(file_name)
+
+            # 比较文件大小和名称
+            if local_size == remote_size and local_name == remote_name:
+                print(f'文件 {local_name} 已存在，停止下载。')
+                return
+
+        # 下载文件
+        response = session.get(file_url, headers=headers_securepdf, stream=True)
+        response.raise_for_status()  # 如果请求不成功，抛出异常
+        length = int(response.headers.get('content-length', 0))
+        label = '正在下载专利<{}>,{:.2f}Kb'.format(os.path.basename(file_name), length/1024)
+        print(label)
+        
+        downloaded = 0
+        with open(file_name, 'wb') as code:
+            for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     code.write(chunk)
-                    # print(label)
+                    downloaded += len(chunk)
+                    progress = int(50 * downloaded / length) if length else 0
+                    sys.stdout.write('\r[{}{}] {:.1f}%'.format('=' * progress, ' ' * (50 - progress), 100 * downloaded / length if length else 0))
+                    sys.stdout.flush()
+        print()  # 打印一个换行，移动到下一行
 
-                    progressbar.update(1024)
+        # 验证下载是否成功
+        if os.path.getsize(file_name) < 10000:
+            print('下载失败：文件大小异常')
+            os.remove(file_name)
+        else:
+            print(f'文件 {os.path.basename(file_name)} 下载成功。')
+
+    except requests.RequestException as e:
+        print(f'下载失败：{str(e)}')
+        if os.path.exists(file_name):
+            os.remove(file_name)
+    except Exception as e:
+        print(f'发生未知错误：{str(e)}')
+        if os.path.exists(file_name):
+            os.remove(file_name)
 
 # down_pdf_file('1.deb','https://files.cnblogs.com/files/wangdaodao/deb.zip')
 def down_pdf(name, url):
@@ -147,7 +184,7 @@ def get_pantent_pdf(patent_no):
         info = get_pdf_info(resp)
 
         
-        down_pdf(info[0], info[1])
+        download_pdf(info[0], info[1])
     else:
         print('抱歉,无法查询到专利,请检查专利号是否正确')
 

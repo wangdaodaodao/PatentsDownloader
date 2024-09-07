@@ -1,71 +1,86 @@
 # -*- coding: utf-8 -*-
 """
-    作者:     王导导
-    版本:     2.0
-    日期:     2020/05/23
     项目名称： 专利下载
+    作者:     王导导
+    版本:     2.1
+    日期:     2024/09/07
+    更新内容:  增加了菜单系统，改进了用户交互
+    
+
+    上一版本:  2.0
+    上一日期:  2020/05/23
 """
 
 
 import webbrowser
-
-
-
 import os
-from pickle import TRUE
 import time
+import urllib.parse  # 添加这行导入
 
 from config import *
 from patentdetail import *
 from patentdown import *
 
-if __name__ == "__main__":
-    print()
-    isStop = False
-    isDown = True
-    isCheck = True
-    while not isStop:
-        input_word = input('请选择：\n0.关键词查询专利\n1.已经有专利号直接下载\3.e退出程序\n请输入>>:')
-        if input_word == str(0):
-            
-            keywords = input('请输入要查询关键词：')
-            url = 'https://s.wanfangdata.com.cn/patent?q={patent_keywords}'.format(patent_keywords=keywords)
-            webbrowser.open(url)
-            
-            select_2 = input('1.输入专利号下载专利\n2.下载本页所有专利\n请选择：')
-            if select_2 == str(1):
-                input_pantent_no = input('请输入专利号吧:')
-                get_pantent_pdf(input_pantent_no)
+def main_menu():
+    while True:
+        print("\n------主菜单------")
+        print("0. *关键词*查询专利")
+        print("1. *已有专利号*直接下载")
+        print("2. 退出程序")
+        choice = input("请选择 (0/1/2): ")
 
-                isStop = True
-            else:
-                print('不好意思哟,等在等待功能完善!')
-                isStop = True
-
-        elif input_word == str(1):
-            keywords = input('请输入专利号：')
-            # 引入False主要是为了事先只有专利号下载的方式
-            get_pantent_pdf(keywords, False)
-            # 跳出循环
-            isStop = True
-        
-            while isCheck:
-                if choice == 'N' or choice == 'n':
-                    isCheck = False
-                    isDown = False
-                    isStop = True
-                    print('已退出程序。')
-                elif choice == 'Y' or choice == 'y':
-                    int_page += 1
-                    break
-                else:
-                    choice = input('输入错误重新输入（Y或者N）:')
-
-        elif input_word == 'e':
-            isStop = True
-            print('已退出')
-        elif input_word == 'E':
-            isStop = True
-            print('已退出')
+        if choice == '0':
+            keyword_search_menu()
+        elif choice == '1':
+            direct_download_menu()
+        elif choice == '2':
+            print("程序已退出")
+            break
         else:
-            print('输入错误请重新输入1或者2。')
+            print("无效选择，请重新输入")
+
+def keyword_search_menu():
+    while True:
+        keywords = input('请输入要查询--关键词-- (输入 "b" 返回主菜单, "q" 退出程序): ')
+        if keywords.lower() == 'b':
+            return
+        elif keywords.lower() == 'q':
+            print("程序已退出")
+            exit()
+
+        encoded_keywords = urllib.parse.quote(keywords)
+        url = f'https://s.wanfangdata.com.cn/patent?q={encoded_keywords}'
+        webbrowser.open(url)
+
+        while True:
+            print("\n1. **输入专利号**下载专利")
+            print("2. 下载本页所有专利 (功能待完善)")
+            print("3. 返回**关键词搜索**")
+            print("4. 返回**主菜单**")
+            print("5. 退出程序")
+            select_2 = input('请选择 (1/2/3/4/5): ')
+
+            if select_2 == '1':
+                input_patent_no = input('请输入专利号: ')
+                get_pantent_pdf(input_patent_no)
+            elif select_2 == '2':
+                print('不好意思哟,等在等待功能完善!')
+            elif select_2 == '3':
+                break
+            elif select_2 == '4':
+                return
+            elif select_2 == '5':
+                print("程序已退出")
+                exit()
+            else:
+                print("无效选择，请重新输入")
+
+def direct_download_menu():
+    while True:
+        patent_no = input("请输入专利号（输入'q'返回上级菜单）：")
+        if patent_no.lower() == 'q':
+            break
+        get_patent_pdf(patent_no)  # 修正这里的函数名
+
+if __name__ == "__main__":
+    main_menu()
