@@ -24,6 +24,9 @@ from patentdetail import get_pantent_info
 from utils import open_image
 from utils import smart_unquote
 from utils import retry_or_exit
+from utils import check_local_patent
+
+from config import DIR_PATH  # 导入 DIR_PATH
 
 from urllib.parse import unquote, quote
 
@@ -37,7 +40,6 @@ SEARCH_URL = 'http://www2.drugfuture.com/cnpat/search.aspx'
 SECUREPDF_URL = 'http://{host_name}/cnpat/SecurePdf.aspx'
 
 # 创建保存PDF的目录
-DIR_PATH = os.path.join(os.getcwd(), 'pdf')
 os.makedirs(DIR_PATH, exist_ok=True)
 
 dir_path = os.getcwd() + os.sep + 'pdf'
@@ -45,6 +47,11 @@ if not os.path.exists(dir_path):
     os.mkdir(dir_path)
 
 def get_yzm(patent_no):
+    """
+    获取验证码并验证专利号。
+    :param patent_no: 专利号
+    :return: 验证后的响应文本或None
+    """
     while True:
         data_verify = {
             'cnpatentno': patent_no,
@@ -60,16 +67,18 @@ def get_yzm(patent_no):
         # 打开验证码图片
         open_image(yzm_path)
 
-        yzm = input('[Step2.]输入验证码（输入 "q" 退出）：>>')
+        yzm = input('[Step2.]输入验证码（输入 "q" 退出当前专利下载，输入 "p" 退出所有专利下载）：>>')
         if yzm.lower() == 'q':
-            return None  # 用户选择退出
+            return 'USER_EXIT'  # 用户选择退出当前专利下载
+        elif yzm.lower() == 'p':
+            return 'USER_EXIT_ALL'  # 用户选择退出所有专利下载
 
         data_search = {
             'cnpatentno': patent_no,
             'common': '1',
             'ValidCode': yzm, }
         response_search = session.post(SEARCH_URL, data=data_search, headers=headers_search)
-        if '错误' in response_search.text:
+        if '验证码输入错误，请返回重新输入。' in response_search.text:
             print('验证码错误，请重试')
         elif '专利号' in response_search.text:
             tips_pattern = re.compile('<td>(.*?)</td>')
@@ -78,17 +87,19 @@ def get_yzm(patent_no):
             return response_search.text
 
 def get_pdf_info(response):
-
-    # print(response)
+    """
+    从响应中提取PDF下载所需的信息。
+    :param response: 验证后的响应文本
+    :return: 文件名、文件URL、请求头和请求数据
+    """
     # 提取 FulltextType 值
     FulltextType_pattern = re.compile('document.Download.FulltextType.value="(.*?)"')
     FulltextType_value = FulltextType_pattern.findall(response)[3]
 
     # 提取 host_name
     host_name_pattern = re.compile('{document.Download.action="(.*?)"')
-
     host_name = host_name_pattern.findall(response)[0].split('//')[1].split('/')[0]
-    print(host_name)
+
     # 提取所有需要的值
     pattern = re.compile('<input name="PatentNo" value="(.*?)" type="hidden" />'
                          '<input name="Name" value="(.*?)" type="hidden" />'
@@ -102,7 +113,7 @@ def get_pdf_info(response):
                          '<input name="FulltextType" value="(.*?)" type="hidden" />'
                          '<input name="Common" value="(.*?)" type="hidden" />')
     search_data = list(pattern.findall(response)[0])
-    print(search_data)
+
     # 构建请求数据
     data_securepdf = {
         'PatentNo': search_data[0],
@@ -139,24 +150,16 @@ def get_pdf_info(response):
 
     file_url = f'http://{host_name}/cnpat/package/{type_name}CN{data_securepdf["PatentNo"]}.pdf'
     file_name = f'{data_securepdf["Name"]}-CN{data_securepdf["PatentNo"]}.pdf'
-    print(file_url)
     return file_name, file_url, headers, data_securepdf
 
-def check_local_patent(patent_no):
-    """检查本地是否存在包含指定专利号的文件"""
-    if not os.path.exists(DIR_PATH):
-        return None
 
-    patent_no = re.escape(patent_no)  # 转义特殊字符
-    pattern = re.compile(rf'.*{patent_no}.*\.pdf', re.IGNORECASE)
-
-    for filename in os.listdir(DIR_PATH):
-        if pattern.match(filename):
-            return os.path.join(DIR_PATH, filename)
-
-    return None
 
 def get_pantent_pdf(patent_no):
+    """
+    获取专利PDF文件。
+    :param patent_no: 专利号
+    :return: True 如果成功下载，False 如果失败, 'USER_EXIT' 如果用户选择退出当前专利下载, 'USER_EXIT_ALL' 如果用户选择退出所有专利下载
+    """
     # 首先检查本地是否已存在文件
     local_file = check_local_patent(patent_no)
     if local_file:
@@ -167,6 +170,10 @@ def get_pantent_pdf(patent_no):
         print(f"[Step1.]正在处理专利号: {patent_no}")
         try:
             resp = get_yzm(patent_no)
+            if resp == 'USER_EXIT':
+                return 'USER_EXIT'
+            elif resp == 'USER_EXIT_ALL':
+                return 'USER_EXIT_ALL'
             if resp is None:
                 print("用户选择退出或无法查询到专利")
                 return False
@@ -198,8 +205,11 @@ def get_pantent_pdf(patent_no):
         
         if not retry_or_exit():
             return False
-
 def retry_or_exit():
+    """
+    提示用户是否重试操作。
+    :return: True 如果用户选择重试，False 如果用户选择退出
+    """
     while True:
         choice = input("是否重试？(Y/N): ").strip().lower()
         if choice == 'y':
@@ -210,7 +220,13 @@ def retry_or_exit():
             print("无效输入，请输入 Y 或 N")
 
 def down_pdf(name, url, headers):
-    """下载PDF文件并显示进度"""
+    """
+    下载PDF文件并显示进度。
+    :param name: 文件名
+    :param url: 文件URL
+    :param headers: 请求头
+    :return: 文件路径或None
+    """
     new_filename = smart_unquote(name)
     new_path = os.path.join(DIR_PATH, os.path.basename(new_filename))
 
@@ -222,7 +238,7 @@ def down_pdf(name, url, headers):
     length = int(response.headers.get('content-length', 0))
     
     with open(new_path, 'wb') as code, tqdm(
-        desc=f'[Step3.]正在下载>>',
+        desc=f'[Step3.2]正在下载>>',
         total=length,
         unit='iB',
         unit_scale=True,
@@ -240,17 +256,32 @@ def down_pdf(name, url, headers):
     return new_path
 
 def download_all_patents(keywords):
-    """下载本页所有专利"""
+    """
+    下载本页所有专利。
+    :param keywords: 查询关键词
+    :return: 成功和失败的数量
+    """
     patents = get_pantent_info(keywords, 1)  # 获取第一页的专利信息
     successful = 0
     failed = 0
-    for patent in patents:
+    total_patents = len(patents)
+    
+    for index, patent in enumerate(patents, start=1):
         patent_no = patent["专利号"]
         title = patent["标题"]
-        print(f"[Step1.]准备处理>>: {title} ({patent_no})")
+        print("*" * 40)  # 分隔符
+        print(f" 准备处理第 [{index}/{total_patents}] 个专利: {title} ({patent_no})")
+        
         try:
-            if get_pantent_pdf(patent_no):
-                print(f"[Step5.]完成处理>>: {title} ({patent_no})")
+            result = get_pantent_pdf(patent_no)
+            if result == 'USER_EXIT':
+                print(f"用户选择退出当前专利下载: {title} ({patent_no})")
+                continue  # 继续处理下一个专利
+            elif result == 'USER_EXIT_ALL':
+                print("用户选择退出所有专利下载")
+                break  # 终止所有专利下载
+            elif result:
+                print(f" 完成处理第 [{index}/{total_patents}] 个专利: {title} ({patent_no})")
                 successful += 1
             else:
                 print(f"处理失败: {title} ({patent_no})")
@@ -258,7 +289,8 @@ def download_all_patents(keywords):
         except Exception as e:
             print(f"处理失败: {title} ({patent_no}). 错误: {str(e)}")
             failed += 1
+        
         time.sleep(1)  # 添加延迟以避免过快请求
+    print("*" * 40)  # 分隔符
     print(f"处理完成。成功: {successful}, 失败: {failed}")
     return successful, failed
-

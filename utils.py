@@ -3,11 +3,13 @@ import urllib.parse
 import platform
 import subprocess
 import re
+import os
 from urllib.parse import unquote, quote
+from config import DIR_PATH  # 导入 DIR_PATH
 
 def open_search_page(keywords):
     """
-    使用给定的关键词打开万方数据专利搜索页面
+    使用给定的关键词打开万方数据专利搜索页面。
     
     :param keywords: 搜索关键词
     """
@@ -15,11 +17,9 @@ def open_search_page(keywords):
     url = f'https://s.wanfangdata.com.cn/patent?q={encoded_keywords}'
     webbrowser.open(url)
 
-
-
 def validate_patent_number(patent_no):
     """
-    验证专利号格式
+    验证专利号格式。
     
     规则：
     1. 可以带有或不带有前缀 'CN'
@@ -55,11 +55,11 @@ def validate_patent_number(patent_no):
     
     return True
 
-
-
 def open_image(image_path):
     """
-    跨平台打开图片文件
+    跨平台打开图片文件。
+    
+    :param image_path: 图片文件路径
     """
     system = platform.system()
 
@@ -82,15 +82,23 @@ def open_image(image_path):
             else:
                 print("无法打开图片文件。请手动打开：", image_path)
 
-
 def smart_unquote(s):
-    """智能解码URL编码的字符串"""
+    """
+    智能解码URL编码的字符串。
+    
+    :param s: URL编码的字符串
+    :return: 解码后的字符串
+    """
     while '%' in s:
         s = unquote(s)
     return s
 
-
 def retry_or_exit():
+    """
+    提示用户是否重试操作。
+    
+    :return: True 如果用户选择重试，False 如果用户选择退出
+    """
     while True:
         choice = input("是否重试？(Y/N): ").strip().lower()
         if choice == 'y':
@@ -100,9 +108,13 @@ def retry_or_exit():
         else:
             print("无效输入，请输入 Y 或 N")
 
-
 def check_local_patent(patent_no):
-    """检查本地是否存在包含指定专利号的文件"""
+    """
+    检查本地是否存在包含指定专利号的文件。
+    
+    :param patent_no: 专利号
+    :return: 文件路径或None
+    """
     if not os.path.exists(DIR_PATH):
         print(f"警告: 目录 {DIR_PATH} 不存在")
         return None
@@ -121,12 +133,39 @@ def check_local_patent(patent_no):
     print(f"未找到包含专利号 {patent_no} 的文件")
     return None
 
-
 def print_menu(title, options):
-    """打印美化的菜单"""
+    """
+    打印美化的菜单。
+    
+    :param title: 菜单标题
+    :param options: 菜单选项字典
+    """
     print("\n" + "=" * 40)
     print(f"{title:^40}")
     print("=" * 40)
     for key, value in options.items():
         print(f"{key}. {value}")
     print("=" * 40)
+
+
+def check_local_patent(patent_no):
+    """
+    检查本地是否存在包含指定专利号的文件。
+    :param patent_no: 专利号
+    :return: 文件路径或None
+    """
+    if not os.path.exists(DIR_PATH):
+        return None
+
+    patent_no = re.escape(patent_no)  # 转义特殊字符
+    pattern = re.compile(rf'.*{patent_no}.*\.pdf', re.IGNORECASE)
+
+    for filename in os.listdir(DIR_PATH):
+        if pattern.match(filename):
+            return os.path.join(DIR_PATH, filename)
+
+    return None
+# 引用此配置文件的文件：
+# - main.py: 用于主程序逻辑和用户交互
+# - patentdown.py: 用于专利PDF下载功能
+# - patentdetail.py: 用于专利信息查询功能
