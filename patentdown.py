@@ -18,6 +18,9 @@ import requests
 import click
 from config import *
 
+import shutil
+from tqdm import tqdm
+
 
 from patentdetail import get_pantent_info
 from utils import open_image
@@ -114,9 +117,6 @@ def smart_unquote(s):
     while '%' in s:
         s = unquote(s)
     return s
-
-import shutil
-from tqdm import tqdm
 
 def down_pdf(name, url):
     """下载PDF文件并显示进度"""

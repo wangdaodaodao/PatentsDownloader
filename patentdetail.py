@@ -2,12 +2,8 @@ import json,re
 
 import blackboxprotobuf
 import requests
+from config import *
 
-headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8;,',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.5 Safari/605.1.15',
-    'Content-Type': 'application/grpc-web+proto',
-}
 
 def decode_protobuf_message(data):
     # 移除前5个字节（可能是长度前缀）
@@ -68,14 +64,6 @@ def get_pantent_info(keywords,pagenum):
 
     form_data = bytes(blackboxprotobuf.encode_message(deserialize_data, message_type))
     bytes_head = bytes([0, 0, 0, 0, len(form_data)])
-    response = requests.post(url, headers=headers, data=bytes_head+form_data)
-    # print(response.content)
+    response = requests.post(url, headers=headers_p_info, data=bytes_head+form_data)
     p_info = decode_protobuf_message(response.content)
-    # response_data, response_type = blackboxprotobuf.protobuf_to_json(response.content)
     return p_info
-
-
-
-
-
-# print(get_pantent_info('java',1))

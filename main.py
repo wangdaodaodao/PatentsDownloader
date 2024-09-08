@@ -2,7 +2,7 @@
 """
     项目名称： 专利下载
     作者:     王导导
-    版本:     2.3
+    版本:     3.0
     日期:     2024/09/08
     更新内容:  增加了下载本页所有专利的功能
     
@@ -22,14 +22,24 @@ from patentdetail import get_pantent_info
 from patentdown import get_pantent_pdf, download_all_patents
 from utils import open_search_page, validate_patent_number
 
+def print_menu(title, options):
+    """打印美化的菜单"""
+    print("\n" + "=" * 40)
+    print(f"{title:^40}")
+    print("=" * 40)
+    for key, value in options.items():
+        print(f"{key}. {value}")
+    print("=" * 40)
 
 def main_menu():
     while True:
-        print("\n------主菜单------")
-        print("1. *关键词*查询专利")
-        print("2. *已有专利号*直接下载")
-        print("3. 退出程序")
-        choice = input("请选择 (1/2/3): ")
+        options = {
+            "1": "*关键词*查询专利",
+            "2": "*已有专利号*直接下载",
+            "3": "退出程序"
+        }
+        print_menu("主菜单", options)
+        choice = input("请选择操作 (1-3): ")
 
         if choice == '1':
             keyword_search_menu()
@@ -43,7 +53,7 @@ def main_menu():
 
 def keyword_search_menu():
     while True:
-        keywords = input('请输入要查询--关键词-- (输入 "b" 返回主菜单, "q" 退出程序): ')
+        keywords = input('\n请输入要查询的关键词 (输入 "b" 返回主菜单, "q" 退出程序): ')
         if keywords.lower() == 'b':
             return
         elif keywords.lower() == 'q':
@@ -54,22 +64,24 @@ def keyword_search_menu():
         current_page = 1
 
         while True:
-            patents = get_pantent_info(keywords, current_page)  # 获取当前页的专利信息
+            patents = get_pantent_info(keywords, current_page)
 
-            print(f"\n当前专利查询关键词{keywords},当前页面: {current_page}")
-            print("当前页专利信息列表：")
+            print(f"\n当前专利查询关键词: {keywords}")
+            print(f"当前页面: {current_page}")
+            print("\n当前页专利信息列表：")
             for i, patent in enumerate(patents, 1):
                 print(f"{i}. {patent['专利号']} - {patent['标题']}")
 
-            print("\n选项：")
-            print("0. 下载所有专利")
-            print("1-N. 下载对应编号的专利")
-            print("X. 下一页")
-            print("S. 上一页")
-            print("R. 返回关键词搜索")
-            print("M. 返回主菜单")
-            print("Q. 退出程序")
-
+            options = {
+                "0": "下载所有专利",
+                "1-N": "下载对应编号的专利",
+                "X": "下一页",
+                "S": "上一页",
+                "R": "返回关键词搜索",
+                "M": "返回主菜单",
+                "Q": "退出程序"
+            }
+            print_menu("选项", options)
             choice = input("请选择 (0/1-N/X/S/R/M/Q): ").upper()
 
             if choice == '0':
@@ -102,7 +114,7 @@ def keyword_search_menu():
 
 def direct_download_menu():
     while True:
-        patent_no = input("请输入专利号（输入'q'返回上级菜单）：")
+        patent_no = input("\n请输入专利号（输入'q'返回上级菜单）：")
         if patent_no.lower() == 'q':
             break
         
@@ -115,7 +127,6 @@ def direct_download_menu():
                 print(f"下载过程中出现错误: {str(e)}")
         else:
             print(f"专利号格式错误: {validation_result}")
-
 
 if __name__ == "__main__":
     main_menu()
