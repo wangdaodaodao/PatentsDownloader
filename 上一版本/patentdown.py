@@ -19,7 +19,6 @@ import click
 import requests
 
 from config import *
-from pdfdown import *
 
 session = requests.Session()
 

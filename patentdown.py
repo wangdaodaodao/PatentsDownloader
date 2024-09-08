@@ -8,16 +8,19 @@
 """
 
 import os
-import platform
+
 import re
 import sys
 import time
 from urllib.parse import unquote, quote
-import subprocess
+
 import requests
 import click
 from config import *
 
+
+from patentdetail import get_pantent_info
+from utils import open_image
 # 创建会话对象，用于保持连接
 session = requests.Session()
 
@@ -35,30 +38,6 @@ dir_path = os.getcwd() + os.sep + 'pdf'
 if not os.path.exists(dir_path):
     os.mkdir(dir_path)
 
-def open_image(image_path):
-    """
-    跨平台打开图片文件
-    """
-    system = platform.system()
-
-    if system == 'Darwin':  # macOS
-        subprocess.call(('open', image_path))
-    elif system == 'Windows':  # Windows
-        os.startfile(image_path)
-    else:  # Linux 和其他系统
-        try:
-            subprocess.call(('xdg-open', image_path))
-        except FileNotFoundError:
-            # 如果 xdg-open 不可用，尝试使用其他常见的图片查看器
-            viewers = ['display', 'feh', 'eog', 'xv']
-            for viewer in viewers:
-                try:
-                    subprocess.call((viewer, image_path))
-                    break
-                except FileNotFoundError:
-                    continue
-            else:
-                print("无法打开图片文件。请手动打开：", image_path)
 
 def get_yzm(patent_no):
     while True:
@@ -76,14 +55,14 @@ def get_yzm(patent_no):
         # 打开验证码图片
         open_image(yzm_path)
 
-        yzm = input('输入验证码：>>')
+        yzm = input('[Step2.]输入验证码：>>')
         data_search = {
             'cnpatentno': patent_no,
             'common': '1',
             'ValidCode': yzm, }
         response_search = session.post(search_url, data=data_search, headers=headers_search)
         if '错误' in response_search.text:
-            print(response_search.text)
+            print('验证码错误')
         elif '专利号' in response_search.text:
             tips_pattern = re.compile('<td>(.*?)</td>')
             return None
@@ -145,14 +124,14 @@ def down_pdf(name, url):
     new_path = os.path.join(DIR_PATH, os.path.basename(new_filename))
 
     if os.path.exists(new_path):
-        print('文件已存在')
+        print('##文件已存在##')
         return new_path
 
     response = session.get(url, headers=headers_securepdf, stream=True)
     length = int(response.headers.get('content-length', 0))
     
     with open(new_path, 'wb') as code, tqdm(
-        desc=f'下载专利<{os.path.basename(new_filename)}>',
+        desc=f'[Step3.]正在下载>>',
         total=length,
         unit='iB',
         unit_scale=True,
@@ -163,17 +142,38 @@ def down_pdf(name, url):
             progress_bar.update(size)
     
     if os.path.getsize(new_path) < 10000:
-        print('下载失败：文件大小异常')
+        print('##下载失败##：文件大小异常')
         os.remove(new_path)
         return None
 
     return new_path
 
 def get_pantent_pdf(patent_no):
+    
     resp = get_yzm(patent_no)
     if resp:
         info = get_pdf_info(resp)
-        actual_path = down_pdf(info[0], info[1])
-        print(f"文件已保存至: {actual_path}")
+        actual_path = down_pdf(info[0], info[1]).split('/')[-1]
+        # print(actual_path,type(actual_path))
+        print(f"[Step4.]文件已保存>>: {actual_path}")
     else:
         print('抱歉,无法查询到专利,请检查专利号是否正确')
+
+
+
+
+
+def download_all_patents(keywords):
+    """下载本页所有专利"""
+    patents = get_pantent_info(keywords, 1)  # 获取第一页的专利信息
+    for patent in patents:
+        patent_no = patent["专利号"]
+        title = patent["标题"]
+        print(f"[Step1.]准备下载>>: {title} ({patent_no})")
+        try:
+            get_pantent_pdf(patent_no)
+            print(f"[Step5.]完成下载>>: {title} ({patent_no})")
+        except Exception as e:
+            print(f"下载失败: {title} ({patent_no}). 错误: {str(e)}")
+        time.sleep(1)  # 添加延迟以避免过快请求
+    print("所有专利下载完成")
