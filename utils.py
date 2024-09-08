@@ -3,6 +3,7 @@ import urllib.parse
 import platform
 import subprocess
 import re
+from urllib.parse import unquote, quote
 
 def open_search_page(keywords):
     """
@@ -80,3 +81,52 @@ def open_image(image_path):
                     continue
             else:
                 print("无法打开图片文件。请手动打开：", image_path)
+
+
+def smart_unquote(s):
+    """智能解码URL编码的字符串"""
+    while '%' in s:
+        s = unquote(s)
+    return s
+
+
+def retry_or_exit():
+    while True:
+        choice = input("是否重试？(Y/N): ").strip().lower()
+        if choice == 'y':
+            return True
+        elif choice == 'n':
+            return False
+        else:
+            print("无效输入，请输入 Y 或 N")
+
+
+def check_local_patent(patent_no):
+    """检查本地是否存在包含指定专利号的文件"""
+    if not os.path.exists(DIR_PATH):
+        print(f"警告: 目录 {DIR_PATH} 不存在")
+        return None
+
+    print(f"正在检查目录: {DIR_PATH}")
+    patent_no = re.escape(patent_no)  # 转义特殊字符
+    pattern = re.compile(rf'.*{patent_no}.*\.pdf', re.IGNORECASE)
+
+    for filename in os.listdir(DIR_PATH):
+        print(f"检查文件: {filename}")
+        if pattern.match(filename):
+            full_path = os.path.join(DIR_PATH, filename)
+            print(f"找到匹配文件: {full_path}")
+            return full_path
+
+    print(f"未找到包含专利号 {patent_no} 的文件")
+    return None
+
+
+def print_menu(title, options):
+    """打印美化的菜单"""
+    print("\n" + "=" * 40)
+    print(f"{title:^40}")
+    print("=" * 40)
+    for key, value in options.items():
+        print(f"{key}. {value}")
+    print("=" * 40)

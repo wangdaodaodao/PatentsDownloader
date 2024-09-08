@@ -15,21 +15,15 @@
 import webbrowser
 import os
 import time
-import urllib.parse  # 添加这行导入
+import urllib.parse  
+import re
 
 from config import *
 from patentdetail import get_pantent_info
-from patentdown import get_pantent_pdf, download_all_patents
-from utils import open_search_page, validate_patent_number
+from patentdown import get_pantent_pdf, download_all_patents, DIR_PATH
+from utils import open_search_page, validate_patent_number,check_local_patent,print_menu
 
-def print_menu(title, options):
-    """打印美化的菜单"""
-    print("\n" + "=" * 40)
-    print(f"{title:^40}")
-    print("=" * 40)
-    for key, value in options.items():
-        print(f"{key}. {value}")
-    print("=" * 40)
+
 
 def main_menu():
     while True:
@@ -60,7 +54,7 @@ def keyword_search_menu():
             print("程序已退出")
             exit()
 
-        open_search_page(keywords)
+        # open_search_page(keywords)
         current_page = 1
 
         while True:
@@ -114,19 +108,28 @@ def keyword_search_menu():
 
 def direct_download_menu():
     while True:
-        patent_no = input("\n请输入专利号（输入'q'返回上级菜单）：")
+        patent_no = input("请输入专利号（输入'q'返回上级菜单）：")
         if patent_no.lower() == 'q':
             break
         
         validation_result = validate_patent_number(patent_no)
         if validation_result is True:
-            try:
-                get_pantent_pdf(patent_no)
-                print(f"[Step5.]成功下载专利: {patent_no}")
-            except Exception as e:
-                print(f"下载过程中出现错误: {str(e)}")
+            # 检查本地是否已存在该专利文件
+            local_file = check_local_patent(patent_no)
+            if local_file:
+                print(f"专利文件已存在: {local_file}")
+                continue  # 继续下一次循环，要求输入新的专利号
+            
+            # 如果本地不存在，则尝试下载
+            print(f"正在尝试下载专利: {patent_no}")
+            if get_pantent_pdf(patent_no):
+                print(f"成功下载专利: {patent_no}")
+            else:
+                print(f"未能下载专利: {patent_no}")
         else:
             print(f"专利号格式错误: {validation_result}")
+
+
 
 if __name__ == "__main__":
     main_menu()

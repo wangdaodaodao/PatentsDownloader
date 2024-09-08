@@ -43,5 +43,8 @@ Thumbs.db
 *.bak
 *.swp
 
+
+.gitignore
+.conda
 # Project specific
 # Add any project-specific files or directories you want to ignore
